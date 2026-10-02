@@ -36,13 +36,9 @@ services:
       ASPNETCORE_ENVIRONMENT: Production
       ConnectionStrings__ActivityDbConnectionString: Host=db; Port=5432; Database=${POSTGRES_DB:-velosaurus}; User Id=${POSTGRES_USER:-postgres}; Password=${POSTGRES_PASSWORD}
 
-  # Frontend
+  # Frontend: https://hub.docker.com/r/dasmuesli/velosaurus-frontend
   frontend:
     image: dasmuesli/velosaurus-frontend:${FRONTEND_TAG:-latest}
-    # TEMPORARY until frontend CI publishes the image to Docker Hub: build from sibling repo checkout
-    build: ../velosaurus-frontend
-    pull_policy: build
-    # TEMPORARY end
     restart: unless-stopped
     depends_on:
       - api
