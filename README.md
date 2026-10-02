@@ -24,6 +24,16 @@ docker compose up -d
 
 Pin a specific version by setting `API_TAG` / `FRONTEND_TAG` in `.env` to a commit sha tag from Docker Hub.
 
+## Demo data
+
+```shell
+docker compose run --rm seed
+```
+
+- Inserts 3 mountain bike tours around Innsbruck from `seed/seed.sql`
+- Waits until the api has created the tables, safe to run again (existing names are skipped)
+- Not part of `docker compose up`, only runs when called
+
 ## Database
 
 - psql: `docker compose exec db psql -U postgres -d velosaurus`

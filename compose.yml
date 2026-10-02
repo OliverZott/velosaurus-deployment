@@ -49,5 +49,31 @@ services:
       ACTIVITY_API_URL: http://api:6789/api/v1/activity
       LOCATION_API_URL: http://api:6789/api/v1/location
 
+  # One-off demo data, not started by `docker compose up`: run `docker compose run --rm seed`
+  # waits until the api has created the tables (migrations), then runs seed/seed.sql (safe to run again)
+  seed:
+    image: postgres:18 # only used for the psql client
+    profiles: [seed]
+    depends_on:
+      db:
+        condition: service_healthy
+      api:
+        condition: service_started
+    environment:
+      PGHOST: db
+      PGUSER: ${POSTGRES_USER:-postgres}
+      PGPASSWORD: ${POSTGRES_PASSWORD}
+      PGDATABASE: ${POSTGRES_DB:-velosaurus}
+    volumes:
+      - ./seed:/seed:ro
+    entrypoint: ["sh", "-c"]
+    command:
+      - |
+        until psql -tAc 'SELECT 1 FROM "Activities" LIMIT 1' > /dev/null 2>&1; do
+          echo "waiting for api migrations..."
+          sleep 2
+        done
+        psql -v ON_ERROR_STOP=1 -f /seed/seed.sql
+
 volumes:
   db-data:
